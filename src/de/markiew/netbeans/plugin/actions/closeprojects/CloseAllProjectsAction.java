@@ -35,7 +35,7 @@ id = "closeotherprojects.CloseAllProjectsAction")
     displayName = "#CTL_CloseAllProjectsAction")
 @Messages("CTL_CloseAllProjectsAction=Close All Projects")
 @ActionReferences({
-    @ActionReference(path = "Projects/Actions", position = 120),
+    @ActionReference(path = "Projects/Actions", position = 120, separatorAfter = 121),
     @ActionReference(path = "Menu/File", position = 720, separatorAfter = 730)
 })
 public final class CloseAllProjectsAction implements ActionListener {
