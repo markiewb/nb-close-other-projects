@@ -18,6 +18,7 @@ package de.markiew.netbeans.plugin.actions.closedocuments;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
@@ -45,6 +46,12 @@ public final class DocumentManager {
      * @return
      */
     public Collection<TopComponent> getDocumentsForProject(Project projectToMatch, boolean onlyMatching) {
+        
+        if (projectToMatch==null)
+        {
+            return Collections.emptyList();
+        }
+
         final WindowManager wm = WindowManager.getDefault();
         final LinkedHashSet<TopComponent> result = new LinkedHashSet<TopComponent>();
         for (TopComponent tc : getCurrentEditors()) {
