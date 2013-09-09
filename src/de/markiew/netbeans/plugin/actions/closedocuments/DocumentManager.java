@@ -23,7 +23,6 @@ import java.util.LinkedHashSet;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.openide.loaders.DataObject;
-import org.openide.filesystems.FileObject;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -46,7 +45,7 @@ public final class DocumentManager {
      * @return
      */
     public Collection<TopComponent> getDocumentsForProject(Project projectToMatch, boolean onlyMatching) {
-        
+
         if (projectToMatch==null)
         {
             return Collections.emptyList();
@@ -55,15 +54,23 @@ public final class DocumentManager {
         final WindowManager wm = WindowManager.getDefault();
         final LinkedHashSet<TopComponent> result = new LinkedHashSet<TopComponent>();
         for (TopComponent tc : getCurrentEditors()) {
+            if (!wm.isEditorTopComponent(tc)) {
+                continue;
+            }
             DataObject dob = tc.getLookup().lookup(DataObject.class);
-            if (dob != null && wm.isEditorTopComponent(tc)) {
-                FileObject primaryFile = dob.getPrimaryFile();
-                Project owner = FileOwnerQuery.getOwner(primaryFile);
-                if (null != owner) {
-                    final boolean sameProject = projectToMatch.equals(owner);
-                    if ((onlyMatching && sameProject) || (!onlyMatching && !sameProject)) {
-                        result.add(tc);
-                    }
+            if (dob != null) {
+                Project projectFromFile = FileOwnerQuery.getOwner(dob.getPrimaryFile());
+                final boolean sameProject = projectToMatch.equals(projectFromFile);
+                if ((onlyMatching && sameProject) || (!onlyMatching && !sameProject)) {
+                    result.add(tc);
+                }
+            } else {
+                if (onlyMatching) {
+                    //NOP
+                } else {
+                    //close others also closes documents without projects
+                    //for example diff windows will be closed
+                    result.add(tc);
                 }
             }
         }
