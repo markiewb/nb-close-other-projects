@@ -3,5 +3,5 @@ OpenIDE-Module: closeprojects
 OpenIDE-Module-Layer: de/markiew/netbeans/plugin/actions/closeprojects/layer.xml
 OpenIDE-Module-Localizing-Bundle: de/markiew/netbeans/plugin/actions/closeprojects/Bundle.properties
 OpenIDE-Module-Requires: org.openide.windows.WindowManager
-OpenIDE-Module-Specification-Version: 1.2
+OpenIDE-Module-Specification-Version: 1.3
 
