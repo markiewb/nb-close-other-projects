@@ -35,7 +35,9 @@ import org.openide.windows.TopComponent;
         displayName = "#CTL_DataObjectAwareCloseDocumentsInProjectAction"
         )
 @ActionReferences({
-    @ActionReference(path = "Editors/TabActions", position = 10, separatorAfter = 50),})
+    @ActionReference(path = "Editors/TabActions", position = 10, separatorAfter = 50),
+    @ActionReference(path = "Menu/File", position = 1010)
+})
 
 @Messages("CTL_DataObjectAwareCloseDocumentsInProjectAction=Close All Documents From This Project")
 public final class DataObjectAwareCloseDocumentsInProjectAction implements ActionListener {
