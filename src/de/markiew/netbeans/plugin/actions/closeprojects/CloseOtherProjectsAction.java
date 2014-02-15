@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.swing.SwingUtilities;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ui.OpenProjects;
 import org.openide.awt.ActionID;
@@ -29,10 +30,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(
-    category = "Project",
-id = "closeotherprojects.CloseOtherProjectsAction")
+        category = "Project",
+        id = "closeotherprojects.CloseOtherProjectsAction")
 @ActionRegistration(
-    displayName = "#CTL_CloseOtherProjectsAction")
+        displayName = "#CTL_CloseOtherProjectsAction")
 @Messages("CTL_CloseOtherProjectsAction=Close Other Projects")
 @ActionReferences({
     @ActionReference(path = "Projects/Actions", position = 100),
@@ -48,14 +49,21 @@ public final class CloseOtherProjectsAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        OpenProjects manager = OpenProjects.getDefault();
-        List<Project> openProjects = new ArrayList<Project>(Arrays.asList(manager.getOpenProjects()));
-        openProjects.removeAll(selectedProjects);
 
-        if (!openProjects.isEmpty()) {
-            Project[] otherProjectsToBeClosed = openProjects.toArray(new Project[openProjects.size()]);
-            manager.close(otherProjectsToBeClosed);
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                OpenProjects manager = OpenProjects.getDefault();
+                List<Project> openProjects = new ArrayList<Project>(Arrays.asList(manager.getOpenProjects()));
+                openProjects.removeAll(selectedProjects);
+
+                if (!openProjects.isEmpty()) {
+                    Project[] otherProjectsToBeClosed = openProjects.toArray(new Project[openProjects.size()]);
+                    manager.close(otherProjectsToBeClosed);
+                }
+            }
+        });
 
 
     }
