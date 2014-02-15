@@ -36,8 +36,7 @@ import org.openide.util.NbBundle.Messages;
         displayName = "#CTL_CloseAllProjectsAction")
 @Messages("CTL_CloseAllProjectsAction=Close All Projects")
 @ActionReferences({
-    @ActionReference(path = "Projects/Actions", position = 120, separatorAfter = 121),
-    @ActionReference(path = "Menu/File", position = 1020, separatorAfter = 1025)
+    @ActionReference(path = "Projects/Actions", position = 120, separatorAfter = 121)
 })
 public final class CloseAllProjectsAction implements ActionListener {
 
