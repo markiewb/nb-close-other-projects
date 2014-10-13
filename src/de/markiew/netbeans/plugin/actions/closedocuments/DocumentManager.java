@@ -19,10 +19,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
+import org.openide.cookies.SaveCookie;
+import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileStateInvalidException;
+import org.openide.filesystems.FileSystem;
 import org.openide.loaders.DataObject;
+import org.openide.util.Exceptions;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -40,14 +46,13 @@ public final class DocumentManager {
      *
      * @param projectToMatch
      * @param onlyMatching if true, it returns only {@link TopComponent}s which
-     * are from the same project; if false, it returns only {@link TopComponent}s
-     * which are not from the given project
+     * are from the same project; if false, it returns only
+     * {@link TopComponent}s which are not from the given project
      * @return
      */
     public Collection<TopComponent> getDocumentsForProject(Project projectToMatch, boolean onlyMatching) {
 
-        if (projectToMatch==null)
-        {
+        if (projectToMatch == null) {
             return Collections.emptyList();
         }
 
@@ -72,6 +77,54 @@ public final class DocumentManager {
                     //for example diff windows will be closed
                     result.add(tc);
                 }
+            }
+        }
+        return result;
+    }
+
+    public Collection<TopComponent> getUnchangedDocuments() {
+
+        final WindowManager wm = WindowManager.getDefault();
+        final LinkedHashSet<TopComponent> result = new LinkedHashSet<TopComponent>();
+        for (TopComponent tc : getCurrentEditors()) {
+            if (!wm.isEditorTopComponent(tc)) {
+                continue;
+            }
+
+            String displayName = tc.getDisplayName();
+            if (null == displayName) {
+                displayName = "";
+            }
+            //check for the format of an unsaved file
+            boolean isUnsaved = null!=tc.getLookup().lookup(SaveCookie.class);
+            if (isUnsaved) {
+                continue;
+            }
+
+            DataObject dob = tc.getLookup().lookup(DataObject.class);
+            if (dob != null) {
+                try {
+                    final FileObject file = dob.getPrimaryFile();
+                    FileSystem fileSystem = file.getFileSystem();
+                    if (fileSystem.getStatus() instanceof FileSystem.HtmlStatus) {
+                        FileSystem.HtmlStatus status = (FileSystem.HtmlStatus) fileSystem.getStatus();
+
+                        //HACK B: There is a change if the label is VCS-annotated with HTML
+                        String html = status.annotateNameHtml("", new HashSet<FileObject>(Arrays.asList(file)));
+                        boolean isUnchanged = html.isEmpty();
+
+                        if (isUnchanged) {
+                            result.add(tc);
+                        }
+                    } else {
+                        //could not determine status, keep this document
+                    }
+                } catch (FileStateInvalidException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            } else {
+                //close diff windows too
+                result.add(tc);
             }
         }
         return result;

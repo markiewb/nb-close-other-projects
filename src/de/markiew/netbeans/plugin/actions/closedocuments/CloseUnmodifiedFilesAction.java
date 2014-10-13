@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * the License at 
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,9 +17,6 @@ package de.markiew.netbeans.plugin.actions.closedocuments;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.netbeans.api.project.FileOwnerQuery;
-import org.netbeans.api.project.Project;
-import org.openide.loaders.DataObject;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -29,30 +26,21 @@ import org.openide.windows.TopComponent;
 
 @ActionID(
         category = "Editor",
-        id = "closedocuments.DataObjectAwareCloseDocumentsInProjectAction"
+        id = "closedocuments.CloseUnmodifiedFilesAction"
         )
 @ActionRegistration(
-        displayName = "#CTL_DataObjectAwareCloseDocumentsInProjectAction"
+        displayName = "#CTL_CloseUnmodifiedFilesAction"
         )
 @ActionReferences({
-    @ActionReference(path = "Editors/TabActions", position = 20, separatorAfter = 50),
-    @ActionReference(path = "Menu/File", position = 1010)
+    @ActionReference(path = "Editors/TabActions", position = 0 , separatorBefore = -50),
 })
 
-@Messages("CTL_DataObjectAwareCloseDocumentsInProjectAction=Close All Documents From This Project")
-public final class DataObjectAwareCloseDocumentsInProjectAction implements ActionListener {
-
-    private final DataObject context;
-    private final boolean documentsFromSameProject = true;
-
-    public DataObjectAwareCloseDocumentsInProjectAction(DataObject context) {
-        this.context = context;
-    }
+@Messages("CTL_CloseUnmodifiedFilesAction=Close Unmodified Files")
+public final class CloseUnmodifiedFilesAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        Project currentProject = FileOwnerQuery.getOwner(this.context.getPrimaryFile());
-        for (TopComponent tc : DocumentManager.getInstance().getDocumentsForProject(currentProject, documentsFromSameProject)) {
+        for (TopComponent tc : DocumentManager.getInstance().getUnchangedDocuments()) {
             tc.close();
         }
     }
