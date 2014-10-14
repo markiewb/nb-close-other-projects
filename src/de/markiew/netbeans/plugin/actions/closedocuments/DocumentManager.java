@@ -15,12 +15,16 @@
  */
 package de.markiew.netbeans.plugin.actions.closedocuments;
 
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import javax.swing.Icon;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
 import org.openide.cookies.SaveCookie;
@@ -29,6 +33,7 @@ import org.openide.filesystems.FileStateInvalidException;
 import org.openide.filesystems.FileSystem;
 import org.openide.loaders.DataObject;
 import org.openide.util.Exceptions;
+import org.openide.util.ImageUtilities;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -84,6 +89,7 @@ public final class DocumentManager {
 
     public Collection<TopComponent> getUnchangedDocuments() {
 
+        Image emptyImage = ImageUtilities.icon2Image(new EmptyIcon());
         final WindowManager wm = WindowManager.getDefault();
         final LinkedHashSet<TopComponent> result = new LinkedHashSet<TopComponent>();
         for (TopComponent tc : getCurrentEditors()) {
@@ -91,12 +97,8 @@ public final class DocumentManager {
                 continue;
             }
 
-            String displayName = tc.getDisplayName();
-            if (null == displayName) {
-                displayName = "";
-            }
             //check for the format of an unsaved file
-            boolean isUnsaved = null!=tc.getLookup().lookup(SaveCookie.class);
+            boolean isUnsaved = null != tc.getLookup().lookup(SaveCookie.class);
             if (isUnsaved) {
                 continue;
             }
@@ -109,9 +111,10 @@ public final class DocumentManager {
                     if (fileSystem.getStatus() instanceof FileSystem.HtmlStatus) {
                         FileSystem.HtmlStatus status = (FileSystem.HtmlStatus) fileSystem.getStatus();
 
-                        //HACK B: There is a change if the label is VCS-annotated with HTML
-                        String html = status.annotateNameHtml("", new HashSet<FileObject>(Arrays.asList(file)));
-                        boolean isUnchanged = html.isEmpty();
+                        //HACK B: There is a change if the icon is annotated
+                        Image annotateIcon = status.annotateIcon(emptyImage, 0, new HashSet<FileObject>(Arrays.asList(file)));
+                        boolean isUnchanged = annotateIcon == emptyImage;
+//                        System.out.println(String.format("%s html for '%s' image=%s %s", !isUnchanged, html, annotateIcon, file));
 
                         if (isUnchanged) {
                             result.add(tc);
@@ -141,4 +144,33 @@ public final class DocumentManager {
         return result;
     }
 
+    public final class EmptyIcon implements Icon {
+
+        private int height;
+        private int width;
+
+        public EmptyIcon() {
+            this(1, 1);
+        }
+
+        public EmptyIcon(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return height;
+        }
+
+        @Override
+        public int getIconWidth() {
+            return width;
+        }
+
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+        }
+
+    }
 }
