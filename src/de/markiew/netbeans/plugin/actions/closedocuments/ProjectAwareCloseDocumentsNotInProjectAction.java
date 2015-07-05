@@ -36,7 +36,7 @@ import org.openide.windows.TopComponent;
         )
 @ActionReferences({
     @ActionReference(path = "Projects/Actions", position = 0, separatorBefore = -50)})
-@Messages("CTL_ProjectAwareCloseDocumentsNotInProjectAction=Close All Documents From Other Projects")
+@Messages("CTL_ProjectAwareCloseDocumentsNotInProjectAction=Close Documents From Other Projects")
 public final class ProjectAwareCloseDocumentsNotInProjectAction implements ActionListener {
 
     private final Project context;

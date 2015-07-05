@@ -39,7 +39,7 @@ import org.openide.windows.TopComponent;
     @ActionReference(path = "Menu/File", position = 1010)
 })
 
-@Messages("CTL_DataObjectAwareCloseDocumentsInProjectAction=Close All Documents From This Project")
+@Messages("CTL_DataObjectAwareCloseDocumentsInProjectAction=Close Documents From Project")
 public final class DataObjectAwareCloseDocumentsInProjectAction implements ActionListener {
 
     private final DataObject context;

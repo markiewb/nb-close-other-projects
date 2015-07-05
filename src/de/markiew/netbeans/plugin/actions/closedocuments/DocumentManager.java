@@ -87,52 +87,6 @@ public final class DocumentManager {
         return result;
     }
 
-    public Collection<TopComponent> getUnchangedDocuments() {
-
-        Image emptyImage = ImageUtilities.icon2Image(new EmptyIcon());
-        final WindowManager wm = WindowManager.getDefault();
-        final LinkedHashSet<TopComponent> result = new LinkedHashSet<TopComponent>();
-        for (TopComponent tc : getCurrentEditors()) {
-            if (!wm.isEditorTopComponent(tc)) {
-                continue;
-            }
-
-            //check for the format of an unsaved file
-            boolean isUnsaved = null != tc.getLookup().lookup(SaveCookie.class);
-            if (isUnsaved) {
-                continue;
-            }
-
-            DataObject dob = tc.getLookup().lookup(DataObject.class);
-            if (dob != null) {
-                try {
-                    final FileObject file = dob.getPrimaryFile();
-                    FileSystem fileSystem = file.getFileSystem();
-                    if (fileSystem.getStatus() instanceof FileSystem.HtmlStatus) {
-                        FileSystem.HtmlStatus status = (FileSystem.HtmlStatus) fileSystem.getStatus();
-
-                        //HACK B: There is a change if the icon is annotated
-                        Image annotateIcon = status.annotateIcon(emptyImage, 0, new HashSet<FileObject>(Arrays.asList(file)));
-                        boolean isUnchanged = annotateIcon == emptyImage;
-//                        System.out.println(String.format("%s html for '%s' image=%s %s", !isUnchanged, html, annotateIcon, file));
-
-                        if (isUnchanged) {
-                            result.add(tc);
-                        }
-                    } else {
-                        //could not determine status, keep this document
-                    }
-                } catch (FileStateInvalidException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            } else {
-                //close diff windows too
-                result.add(tc);
-            }
-        }
-        return result;
-    }
-
     private Collection<TopComponent> getCurrentEditors() {
         final ArrayList<TopComponent> result = new ArrayList<TopComponent>();
         final WindowManager wm = WindowManager.getDefault();
@@ -142,35 +96,5 @@ public final class DocumentManager {
             }
         }
         return result;
-    }
-
-    public final class EmptyIcon implements Icon {
-
-        private int height;
-        private int width;
-
-        public EmptyIcon() {
-            this(1, 1);
-        }
-
-        public EmptyIcon(int width, int height) {
-            this.width = width;
-            this.height = height;
-        }
-
-        @Override
-        public int getIconHeight() {
-            return height;
-        }
-
-        @Override
-        public int getIconWidth() {
-            return width;
-        }
-
-        @Override
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-        }
-
     }
 }
