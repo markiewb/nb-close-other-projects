@@ -138,7 +138,7 @@ public final class DocumentManager {
         final WindowManager wm = WindowManager.getDefault();
         for (Mode mode : wm.getModes()) {
             if (wm.isEditorMode(mode)) {
-                result.addAll(Arrays.asList(mode.getTopComponents()));
+                result.addAll(Arrays.asList(wm.getOpenedTopComponents(mode)));
             }
         }
         return result;
